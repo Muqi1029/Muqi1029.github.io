@@ -8,5 +8,10 @@ redirect_from:
   - /about.html
 ---
 
-Hello there! I am Muqi Li. Now I am a junior student majoring in Data Science and Big Data Techonology at ECNU. My research interests mainly lie in Trustworthy LLM, Multimodal LLM, and AutoML.
-Meantime, I am looking for relevant research opportunities, don't hesistate to reach out if you are interested in me.
+Hello there! I am Muqi Li, currently a junior majoring in Data Science and Big Data Technology at ECNU. My research interests primarily focus on:
+
+- Unsupervised Learning and Multimodal Learning: Developing advanced unsupervised learning techniques and exploring their applications in multimodal data processing.
+- Parallel and Distributed Computing: Investigating federated learning and privacy-preserving computation to create efficient systems that safeguard data privacy.
+- Large Models and Their Applications: Crafting efficient deep learning algorithms and machine learning systems to advance the practical application of large language models and drive broader technological breakthroughs.
+
+I am actively seeking relevant research opportunities. If my interests align with yours, please feel free to reach out!
