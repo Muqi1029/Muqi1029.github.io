@@ -9,14 +9,14 @@ main:
   # - title: "Teaching"
   #   url: /teaching/
 
-  - title: "Blog Posts"
-    url: /blog/
+  # - title: "Blog Posts"
+  #   url: /blog/
 
   # - title: "Portfolio"
   #   url: /portfolio/
 
-  - title: "Projects"
-    url: /project/
+  # - title: "Projects"
+  #   url: /project/
 
   - title: "CV"
-    url: /cv/
+    url: http://muqi1029.github.io/files/Resume.pdf

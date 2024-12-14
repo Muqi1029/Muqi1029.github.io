@@ -8,10 +8,17 @@ redirect_from:
   - /about.html
 ---
 
-Hello there! I am Muqi Li, currently a junior majoring in Data Science and Big Data Technology at ECNU. My research interests primarily focus on:
+Hello! I am Muqi Li, a senior university student majoring in Data Science and Big Data Technology at East China Normal University (ECNU). My life motto is "Everything is Reasonable," and my personal goal and lifelong pursuit is to build an AI system that is:
 
-- Unsupervised Learning and Multimodal Learning: Developing advanced unsupervised learning techniques and exploring their applications in multimodal data processing.
-- Parallel and Distributed Computing: Investigating federated learning and privacy-preserving computation to create efficient systems that safeguard data privacy.
-- Large Models and Their Applications: Crafting efficient deep learning algorithms and machine learning systems to advance the practical application of large language models and drive broader technological breakthroughs.
+1. Scalable
+2. Robust
+3. Trustworthy
+4. Efficient
 
-I am actively seeking relevant research opportunities. If my interests align with yours, please feel free to reach out!
+Based on these four core requirements, my research interests include:
+
+- **Parallel and Distributed Computing**: Designing more effective and efficient algorithms to enhance scalability and robustness in computing processes.
+- **Uncertainty Qualification**: Making AI systems more trustworthy.
+- **Machine Learning Systems**: Developing better serving and training infrastructure, and co-designing hardware and software to contribute to the broader community.
+
+I love collaboration. If our interests align, please feel free to reach out!
