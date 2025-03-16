@@ -21,4 +21,4 @@ Based on these four core requirements, my research interests include:
 - **Uncertainty Qualification**: Making AI systems more trustworthy.
 - **Machine Learning Systems**: Developing better serving and training infrastructure, and co-designing hardware and software to contribute to the broader community.
 
-I love collaboration. If our interests align, please feel free to reach out!
+<span style="color: red;">I am actively looking for Machine Learning System Industrial/Research Opportunity.</span>
