@@ -8,7 +8,7 @@ redirect_from:
   - /about.html
 ---
 
-Hello! I am Muqi Li, a senior university student majoring in Data Science and Big Data Technology at East China Normal University (ECNU). My life motto is "Everything is Reasonable," and my personal goal and lifelong pursuit is to build an AI system that is:
+Hello :smile: I am Muqi Li, a senior university student majoring in Data Science and Big Data Technology at East China Normal University (ECNU). My life motto is "Everything is Reasonable," and my personal goal and lifelong pursuit is to build an AI system that is:
 
 1. Scalable
 2. Robust
