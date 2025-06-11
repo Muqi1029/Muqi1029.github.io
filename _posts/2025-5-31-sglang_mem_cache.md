@@ -12,8 +12,6 @@ tags:
 >
 > Of source, if you want to know all details, the best way is to look directly at the source code, which is available in [here](https://github.com/sgl-project/sglang)
 
-# Memory & Radix Cache
-
 Main walker:
 
 `launch_server` ⇒ `_launch_subprocesses` ⇒ `Init Scheduler` ⇒ `Init TpWorker` ⇒ `Init ModelConfig & ModelRunner` ⇒ `ModelRunner init KV Cache Pool & Allcator`
@@ -38,7 +36,7 @@ The `ModelRunner`: owns the real model, runs the **forward** pass of the models
 
 here is the initialization of `ModelRunner` , and also the initialization of `KV Cache Pool`
 
-In this process of initating `memory pool` , SGLang provides 3 abstract managers
+In this process of initiating `memory pool` , SGLang provides 3 abstract managers
 
 1. `req_to_token_pool`: A memory pool that maps a request’s tokens to `out_cache_loc`
 2. `token_to_kv_pool`: A pool that maps `out_cache_loc` from `req_token_pool` to its real KV Cache data
@@ -56,7 +54,7 @@ class ModelRunner:
     global_server_args_dict.update({...})
 
     # build WORLD_GROUP, TP_GROUP, PP_GROUP for later communication
-    # after init the distibuted settings, get the minimum GPU memory across the world
+    # after init the distributed settings, get the minimum GPU memory across the world
     min_per_gpu_memory = init_torch_distributed()
 
     initialize(min_per_gpu_memory)
@@ -162,7 +160,7 @@ class ModelRunner:
 
 Reading from above simplified code reviews, we can see:
 
-1. `mem_fraction_static` ’s usage
+1. **`mem_fraction_static` ’s usage**
 
 The `mem_fraction_static` of `GPU memory` is used for `model weights` and `KV Cache Pool`, Use a smaller value if you see out-of-memory errors. But how does the process go?
 
@@ -172,7 +170,7 @@ The `mem_fraction_static` of `GPU memory` is used for `model weights` and `KV Ca
 4. Compute non-static GPU memory: (`M3 = M1 * (1 - mem_fraction_static)` )
 5. The memory for KV cache Pool: `M2 - M3`
 
-1. How a token’s KV Cache is computed:
+2. How a token’s KV Cache is computed:
 
 `tp_num_head * head_dim * num_layers * 2 * element_size (torch._utils._element_size(kv_cache_dtype))`
 
