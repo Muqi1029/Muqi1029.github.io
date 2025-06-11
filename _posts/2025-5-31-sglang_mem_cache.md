@@ -160,7 +160,7 @@ class ModelRunner:
 
 Reading from above simplified code reviews, we can see:
 
-1. **`mem_fraction_static` ’s usage**
+1. **How `mem-fraction-static` works in the KV Cache Initiation**
 
 The `mem_fraction_static` of `GPU memory` is used for `model weights` and `KV Cache Pool`, Use a smaller value if you see out-of-memory errors. But how does the process go?
 
@@ -170,7 +170,7 @@ The `mem_fraction_static` of `GPU memory` is used for `model weights` and `KV Ca
 4. Compute non-static GPU memory: (`M3 = M1 * (1 - mem_fraction_static)` )
 5. The memory for KV cache Pool: `M2 - M3`
 
-2. How a token’s KV Cache is computed:
+6. **How is each token’s `KV Cache` computed**
 
 `tp_num_head * head_dim * num_layers * 2 * element_size (torch._utils._element_size(kv_cache_dtype))`
 
@@ -180,7 +180,7 @@ The `mem_fraction_static` of `GPU memory` is used for `model weights` and `KV Ca
 
 A memory pool that maps a request to its token locations.
 
-Shape: `max_num_reqs *+* 1`  * `self.model_config.context_len *+* 4`
+Shape: `max_num_reqs + 1`  * `self.model_config.context_len + 4`
 
 Dtype: `torch.int32`
 
@@ -200,7 +200,7 @@ class ReqToTokenPool:
   def write(indices, values):
     req_to_token[indices] = values
 
-  def avaiable_size():
+  def available_size():
     return len(free_slots)
 
   def alloc(need_size):
@@ -214,7 +214,7 @@ class ReqToTokenPool:
       free_slots.extend(free_index)
 
   def clear():
-    free_flost = list(range(size)
+    free_slots = list(range(size)
 ```
 
 ### token_to_kv_pool
@@ -223,7 +223,7 @@ A pool that maps `out_cache_loc` from `req_token_pool` to its real KV Cache data
 
 Mainly maintain the `k_buffer` and `v_buffer` which has the same shape
 
-Shape(List of `Tensor`): `layer_num` *[ `Tensor` ], where each `Tensor`: `max_total_num_tokens + page_size`* `head_num`  * `head_dim`
+Shape(List of `Tensor`): `layer_num` \* List[`Tensor`], where each `Tensor`: `max_total_num_tokens + page_size`*`head_num`* `head_dim`
 
 Access:
 
