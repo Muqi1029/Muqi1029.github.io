@@ -10,11 +10,11 @@ tags:
 >
 > To make the core concepts more accessible, this blog post uses pseudocode that focuses on the main ideas while omitting implementation details (such as `self` references and other technical specifics). While simplified, the pseudocode maintains the essential logic and workflow of the system.
 >
-> Of source, if you want to know all details, the best way is to look directly at the source code, which is available in [here](https://github.com/sgl-project/sglang)
+> Of source, if you want to know all details, the best way is to look directly at the source code, which is available [here](https://github.com/sgl-project/sglang)
 
 Main walker:
 
-`launch_server` ⇒ `_launch_subprocesses` ⇒ `Init Scheduler` ⇒ `Init TpWorker` ⇒ `Init ModelConfig & ModelRunner` ⇒ `ModelRunner init KV Cache Pool & Allcator`
+`launch_server` ⇒ `_launch_subprocesses` ⇒ `Init Scheduler` ⇒ `Init TpWorker` ⇒ `Init ModelConfig & ModelRunner` ⇒ `ModelRunner init KV Cache Pool & Allocator`
 
 Main points in this blog:
 
@@ -23,16 +23,15 @@ Main points in this blog:
 - How `KV Cache Pool` are managed(allocate, free, use)
 - How `Radix Cache` reuses KV Cache
 
-This blog mainly compasses 2 sections
+This blog mainly contains 2 sections
 
-- In the KV Cache Management section, we will explore how `KV Cache` is managed through allocation, freeing, and usage
+- In the KV Cache Management section, we will explore how `KV Cache` is managed (creation, allocation, free, and usage)
 - In the Radix Tree Cache section, we will explore how the `radix tree` data structure enables KV Cache reuse
 
 # KV Cache Management
 
 > **Background**
-The `ModelRunner`: owns the real model, runs the **forward** pass of the models
->
+The `ModelRunner`: owns real models, runs the **forward** pass of models
 
 here is the initialization of `ModelRunner` , and also the initialization of `KV Cache Pool`
 
@@ -160,7 +159,7 @@ class ModelRunner:
 
 Reading from above simplified code reviews, we can see:
 
-1. **How `mem-fraction-static` works in the KV Cache Initiation**
+💡: **How `mem-fraction-static` works in the KV Cache Initiation**
 
 The `mem_fraction_static` of `GPU memory` is used for `model weights` and `KV Cache Pool`, Use a smaller value if you see out-of-memory errors. But how does the process go?
 
@@ -170,7 +169,7 @@ The `mem_fraction_static` of `GPU memory` is used for `model weights` and `KV Ca
 4. Compute non-static GPU memory: (`M3 = M1 * (1 - mem_fraction_static)` )
 5. The memory for KV cache Pool: `M2 - M3`
 
-6. **How is each token’s `KV Cache` computed**
+💡: **How is each token’s `KV Cache` computed**
 
 `tp_num_head * head_dim * num_layers * 2 * element_size (torch._utils._element_size(kv_cache_dtype))`
 
@@ -223,7 +222,7 @@ A pool that maps `out_cache_loc` from `req_token_pool` to its real KV Cache data
 
 Mainly maintain the `k_buffer` and `v_buffer` which has the same shape
 
-Shape(List of `Tensor`): `layer_num` \* List[`Tensor`], where each `Tensor`: `max_total_num_tokens + page_size`*`head_num`* `head_dim`
+Shape(List of `Tensor`): `layer_num` \* List[`Tensor`], where each `Tensor`: `max_total_num_tokens + page_size` \* `head_num` \* `head_dim`
 
 Access:
 
@@ -476,8 +475,8 @@ class FlashAttention(AttentionBackend):
 
 The first section `KV Cache Management` is over here, we talked about
 
-1. How `KV Cache` are initiated
-2. How `KV Cache` is manged (allocate `slots, tokens` to reqs)
+1. How `KV Cache` are initiate: Just create a List of Huge Tensors
+2. How `KV Cache` is manged (allocate `slots`, `tokens` to reqs)
 3. How the real `KV Cache data` are saved and retrieved when computing attention scores
 
 # Radix Tree Cache
@@ -486,7 +485,7 @@ One novel idea of `SGLang` is `Radix Attention` , which uses `radix tree` to reu
 
 So, what is `Radix Tree`?
 
-Its core idea is to get prefix
+Its core idea is to get reuseable `out_cache_loc` based on the `token_ids`, `token_ids` is the key in the tree node. So for the requests with the same prefix `token_ids`, we search in the tree to get its `out_cache_loc`, by doing so, we can use **one** `out_cache_loc` for **two or more** requests.
 
 ## Radix Tree
 
@@ -496,7 +495,7 @@ class TreeNode:
     counter = 0
 
     def __init__(self, id: Optional[int] = None):
-        self.children = defaultdict(TreeNode) # use 1page-size key as the dict_key
+        self.children = defaultdict(TreeNode) # use 1 page-size key as the dict_key
         self.parent = None
         self.key = None # Key is the `token_ids`
         self.value = None # Value is the `out_cache_loc`, which records the location of real KV Cache data
@@ -920,14 +919,14 @@ When `prefill` is over,
 
 ```python
 def process_batch_result_prefill(batch, result):
-  for i, (req, next_token_id) in enumerate(batch.reqs, result.next_token_ids):
-    req.output_ids.append(next_token_id)
-        req.check_finished()
+    for i, (req, next_token_id) in enumerate(batch.reqs, result.next_token_ids):
+        req.output_ids.append(next_token_id)
+            req.check_finished()
 
         if req.finished():
-          tree_cache.cache_finished_req(req)
+            tree_cache.cache_finished_req(req)
 
-       elif not batch.decoding_reqs or req not in batch.decoding_reqs:
+        elif not batch.decoding_reqs or req not in batch.decoding_reqs:
             # This updates radix so others can match
             tree_cache.cache_unfinished_req(req)
 ```
@@ -936,19 +935,14 @@ When `decode`  is over,
 
 ```python
 def process_batch_result_decode(batch, result):
-  for i, (req, next_token_id) in enumerate(zip(batch.reqs, next_token_ids)):
-    req.check_finished()
+    for i, (req, next_token_id) in enumerate(zip(batch.reqs, next_token_ids)):
+        req.check_finished()
 
-    if req.finished():
-           tree_cache.cache_finished_req(req)
+        if req.finished():
+            tree_cache.cache_finished_req(req)
 ```
 
-<aside>
-💡
-
-Only when `decode` finished, tree_cache cached its (`token_ids`, `out_cache_loc` )
-
-</aside>
+💡 Only when `decode` finished, tree_cache cached its (`token_ids`, `out_cache_loc` )
 
 ### Evict
 
